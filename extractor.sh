@@ -14,8 +14,6 @@ while read -r domain; do
         continue
     fi
 
-    echo "Processing domain: $domain" | tee -a "$output_file"
-
     curl -s "https://api.certspotter.com/v1/issuances?domain=$domain&include_subdomains=true&expand=dns_names" \
         | jq .[].dns_names \
         | grep -Po "(([\\w.-]*)\\.([\\w]*)\\.([A-z]))\\w+" \
