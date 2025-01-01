@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 domain_file="url.txt"
-output_file="url_extractor.txt"
+output_file="url_extract.txt"
 
 if [[ ! -f "$domain_file" ]]; then
     echo "File $domain_file not found!"
@@ -13,6 +13,8 @@ while read -r domain; do
     if [[ -z "$domain" ]]; then
         continue
     fi
+
+    echo "Processing domain: $domain"
 
     curl -s "https://api.certspotter.com/v1/issuances?domain=$domain&include_subdomains=true&expand=dns_names" \
         | jq .[].dns_names \
@@ -47,5 +49,9 @@ while read -r domain; do
     curl -s "https://api.subdomain.center/?domain=$domain" \
         | jq -r '.[]' \
         | sort -u | tee -a "$output_file"
+
+    nmap -sn --script hostmap-crtsh "$domain" \
+        | awk -F'|' '$2 ~ /'$domain'/ {print $2}' \
+        | tr -d ' ' | tee -a "$output_file"
 
 done < "$domain_file"
