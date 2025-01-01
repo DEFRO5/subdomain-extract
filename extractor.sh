@@ -1,7 +1,7 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 
 domain_file="url.txt"
-output_file="output.txt"
+output_file="url_extractor.txt"
 
 if [[ ! -f "$domain_file" ]]; then
     echo "File $domain_file not found!"
