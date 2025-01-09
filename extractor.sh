@@ -54,4 +54,8 @@ while read -r domain; do
         | awk -F'|' '$2 ~ /'$domain'/ {print $2}' \
         | tr -d ' ' | tee -a "$output_file"
 
+    for i in $(seq 1 $(curl -s "https://rapiddns.io/subdomain/$domain" | grep -oP 'href="/subdomain/$domain\?page=\K\d+' | sort -nu | tail -n 1)); do
+        curl -s "https://rapiddns.io/subdomain/$domain?page=$i" | grep -oP '(?<=<td>)[a-zA-Z0-9.-]+\.pexels\.com' | sort -u
+    done | tee -a "$output_file"
+
 done < "$domain_file"
